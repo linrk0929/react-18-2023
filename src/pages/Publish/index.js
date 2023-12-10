@@ -15,13 +15,16 @@ import {
   import './index.scss'
   import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { useEffect, useState } from 'react'
-import { http } from '@/utils'
+import { useEffect, useRef, useState } from 'react'
+
 import { getChannelAPI ,createAriticleAPI } from '@/apis/article'
+// import { useChannel } from '@/hooks/useChannel'
   const { Option } = Select
   
 const Publish = () => {
-  //获取频道列表
+
+ 
+  // 获取频道列表
   const [channelList, setChannelList] = useState([])
   
   useEffect(() => { 
@@ -40,10 +43,10 @@ const Publish = () => {
       channel_id,
       content,
       title,
-      type: 1,
+      type: imageType,
       cover: {
-        type: 1,
-        images: []
+        type: imageType,
+        images: imageList.map(item => item.response.data.url)
       }
     }
    await createAriticleAPI(params)
@@ -52,14 +55,23 @@ const Publish = () => {
   }
     // 上传图片
   const [imageList, setImageList] = useState([])
+  const cacheImageList = useRef([])
   const onUploadChange =(info) => { 
     setImageList(info.fileList)
+    cacheImageList.current = info.fileList
   }
   const [imageType, setImageType] = useState(0)
 
   const onTypeChange = (e) => {
     console.log(e)
-    setImageType(e.target.value)
+    const type = e.target.value
+    setImageType(type)
+    if (type === 1) {
+      const imgList = cacheImageList.current[0] ? [cacheImageList.current[0]] : []
+      setImageList(imgList)
+    } else if (type === 3) { 
+      setImageList(cacheImageList.current)
+    }
   }
     return (
       <div className="publish">
@@ -113,6 +125,7 @@ const Publish = () => {
                 onChange={onUploadChange}
                 maxCount={imageType}
                 multiple={imageType > 1}
+                fileList={imageList}
   >
     <div style={{ marginTop: 8 }}>
       <PlusOutlined />

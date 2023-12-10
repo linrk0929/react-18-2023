@@ -17,3 +17,12 @@ export function createAriticleAPI(data) {
         data
     })
 }
+
+//获取文章列表
+export function getArticleListAPI(params) { 
+    return http({
+        url: '/mp/articles',
+        method: 'GET',
+        params
+    })
+}
