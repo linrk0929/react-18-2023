@@ -15,7 +15,7 @@ const { Header, Sider } = Layout
 const items = [
   {
     label: '首页',
-    key: '/',
+    key: '/home',
     icon: <HomeOutlined />,
   },
   {
