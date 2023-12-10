@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getToken } from "./token";
 //1.根域名配置
 //2.超时时间
 //3.请求拦截器/响应拦截器
@@ -10,6 +11,11 @@ const http = axios.create({
 //添加请求拦截器
 //在请求发送之前 做拦截 插入一些自定义的配置
 http.interceptors.request.use((config) => { 
+    // if not login a token
+    const token = getToken()
+    if (token) { 
+        config.headers.Authorization = `Bearer ${token}`
+    }
     return config
 }, (error) => { 
     return Promise.reject(error)

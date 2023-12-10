@@ -1,14 +1,16 @@
 //和用户相关的状态管理
 import { createSlice } from '@reduxjs/toolkit'
 import { http } from '@/utils'
+import { setToken as _setToken,getToken } from '@/utils'
  const userStore = createSlice({
      name: 'user',
      initialState: {
-         token:''
+         token:getToken()||''
      },
      reducers: {
          setToken(state,action) {
-                state.token = action.payload
+             state.token = action.payload
+           _setToken(state.token)
          }
      }
  })
@@ -23,7 +25,6 @@ const fetchLogin = (loginForm) => {
         dispatch(setToken(res.data.token))
     }
 }
-
 
 export { fetchLogin,setToken }
 
