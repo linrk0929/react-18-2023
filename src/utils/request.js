@@ -1,5 +1,6 @@
 import axios from "axios";
-import { getToken } from "./token";
+import { clearToken, getToken } from "./token";
+import router from "@/router";
 //1.根域名配置
 //2.超时时间
 //3.请求拦截器/响应拦截器
@@ -29,6 +30,11 @@ http.interceptors.response.use((response) => {
 }, (error) => { 
     //超出2xx 范围内的状态码都会出发该函数
     //对响应错误做点什么
+    if (error.response.status === 401) { 
+        clearToken()
+        router.navigate('/login')
+        window.location.reload()
+    }
     return Promise.reject(error)
 })
 

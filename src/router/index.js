@@ -1,7 +1,7 @@
 import Layout from "@/pages/Layout";
 import Login from "@/pages/Login";
 
-// import  AuthRoute  from '@/components/AuthRoute'
+import  AuthRoute  from '@/components/AuthRoute'
 
 import { createBrowserRouter } from 'react-router-dom'
 
@@ -12,7 +12,7 @@ import Publish from "@/pages/Publish";
  const router =  createBrowserRouter([
     {
          path: '/',
-         element: <Layout />,
+         element: <AuthRoute><Layout /></AuthRoute>,
          children: [
             {
                  path:'home',
