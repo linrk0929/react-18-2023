@@ -11,13 +11,13 @@ import {
     message
   } from 'antd'
   import { PlusOutlined } from '@ant-design/icons'
-  import { Link } from 'react-router-dom'
+  import { Link, useSearchParams } from 'react-router-dom'
   import './index.scss'
   import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { useEffect, useRef, useState } from 'react'
 
-import { getChannelAPI ,createAriticleAPI } from '@/apis/article'
+import { getChannelAPI ,createAriticleAPI,getArticleById } from '@/apis/article'
 // import { useChannel } from '@/hooks/useChannel'
   const { Option } = Select
   
@@ -73,6 +73,28 @@ const Publish = () => {
       setImageList(cacheImageList.current)
     }
   }
+  //回填数据
+  const [searchParams] = useSearchParams()
+  const articleId = searchParams.get('id')
+  const [form] = Form.useForm()
+  useEffect(() => { 
+    const getArticleDetail = async () => { 
+      const res = await getArticleById(articleId)
+      const data = res.data
+      const { cover } = data
+      form.setFieldsValue({
+        ...data,
+        type:data.cover.type
+      })
+      setImageType(cover.type)
+      setImageList(cover.images.map(url => { 
+        return {url}
+      }))
+    }
+    getArticleDetail()
+  }, [articleId,form])
+
+
     return (
       <div className="publish">
         <Card
@@ -89,6 +111,7 @@ const Publish = () => {
             wrapperCol={{ span: 16 }}
             initialValues={{ type: 0 }}
             onFinish={onFinish}
+            form={form}
           >
             <Form.Item
               label="标题"

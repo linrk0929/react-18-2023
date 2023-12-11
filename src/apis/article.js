@@ -34,3 +34,11 @@ export function DeleteArticleListAPI(data) {
         data
     })
 }
+
+//获取文章详情
+export function getArticleById(articleId) { 
+    return http({
+        url: `/mp/articles/${articleId}`,
+        method:'GET'
+    })
+}
