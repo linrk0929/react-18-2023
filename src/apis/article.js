@@ -26,3 +26,11 @@ export function getArticleListAPI(params) {
         params
     })
 }
+
+export function DeleteArticleListAPI(data) { 
+    return http({
+        url: `/mp/articles/${data.id}`,
+        method: 'DELETE',
+        data
+    })
+}

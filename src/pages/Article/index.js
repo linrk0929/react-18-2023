@@ -1,12 +1,12 @@
-import { Link } from 'react-router-dom'
-import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select } from 'antd'
+import { Link, useNavigate } from 'react-router-dom'
+import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select, Popconfirm } from 'antd'
 import locale from 'antd/es/date-picker/locale/zh_CN'
 import { Table, Tag, Space } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import img404 from '@/assets/error.png'
 // import { useChannel } from '@/hooks/useChannel'
-import { useEffect, useState } from 'react'
-import { getChannelAPI,getArticleListAPI } from '@/apis/article'
+import { useEffect, useState, } from 'react'
+import { getChannelAPI,getArticleListAPI,DeleteArticleListAPI } from '@/apis/article'
 
 
 const { Option } = Select
@@ -29,9 +29,10 @@ const Article = () => {
         1:<Tag color="green">待审核</Tag>,
         2:<Tag color="green">审核通过</Tag>
     }
-
+    const navigator = useNavigate()
       // 准备列数据
   const columns = [
+ 
     {
       title: '封面',
       dataIndex: 'cover',
@@ -72,13 +73,23 @@ const Article = () => {
       render: data => {
         return (
           <Space size="middle">
-            <Button type="primary" shape="circle" icon={<EditOutlined />} />
+            <Button type="primary" shape="circle" icon={<EditOutlined />}
+            onClick={()=> navigator(`/publish?id=${data.id}`)}
+            />
+            <Popconfirm
+              title='删除文章'
+              description="确认删除该条文章吗?"
+              onConfirm={() => delArticle(data)}
+              okText="确认"
+              cancelText="取消"
+            >
             <Button
               type="primary"
               danger
               shape="circle"
               icon={<DeleteOutlined />}
-            />
+              />
+              </Popconfirm>
           </Space>
         )
       }
@@ -133,6 +144,23 @@ const Article = () => {
        
     }
 
+  //分页
+  const onPageChange = (page) => { 
+    console.log(page)
+    //修改参数依赖项 引发数据的重新获取
+    setReqData({
+      ...reqData,
+      page
+    })
+  }
+
+  const delArticle  = async (data) => { 
+    await DeleteArticleListAPI(data)
+    setReqData({
+      page: 1,
+      per_page:10
+    })
+  }
   return (
     <div>
       <Card
@@ -180,7 +208,11 @@ const Article = () => {
           </Card>
          
           <Card title={`根据筛选条件共查询到${count}条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={list} />
+        <Table rowKey="id" columns={columns} dataSource={list} pagination={{
+          total: count,
+          pageSize: reqData.per_page,
+          onChange: onPageChange
+        }} />
       </Card>
     </div>
   )
