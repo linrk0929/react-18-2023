@@ -17,7 +17,7 @@ import {
 import 'react-quill/dist/quill.snow.css'
 import { useEffect, useRef, useState } from 'react'
 
-import { getChannelAPI ,createAriticleAPI,getArticleById } from '@/apis/article'
+import { getChannelAPI ,createAriticleAPI,getArticleById,updateArticleAPI } from '@/apis/article'
 // import { useChannel } from '@/hooks/useChannel'
   const { Option } = Select
   
@@ -40,17 +40,30 @@ const Publish = () => {
     console.log(formValue)
     const { channel_id, content, title } = formValue
     const params = {
-      channel_id,
+     
       content,
       title,
       type: imageType,
       cover: {
         type: imageType,
-        images: imageList.map(item => item.response.data.url)
-      }
+        images: imageList.map(item => { 
+          if (item.response) {
+            return item.response.data.url
+          } else { 
+            return item.url
+          }
+        })
+      },
+      channel_id
     }
-   await createAriticleAPI(params)
-    message.success('发布文章成功')
+    if (articleId) {
+      await   updateArticleAPI({...params,id:articleId})
+    } else { 
+   createAriticleAPI(params)
+    }
+
+ 
+    message.success(`${articleId ? '编辑' : '发布'}文章成功`)
    
   }
     // 上传图片
